@@ -1,0 +1,53 @@
+# Open Cure Discovery - Lung Cancer Screening Configuration
+# This preset is optimized for screening against common lung cancer targets
+
+project:
+  name: "lung-cancer-screening"
+  disease: "lung-cancer"
+  description: "Virtual screening campaign targeting NSCLC and other lung cancers"
+
+target:
+  pdb_id: "1M17"  # EGFR kinase domain
+  binding_site_center: [21.0, 2.0, -17.0]
+  binding_site_size: [22.0, 22.0, 22.0]
+
+molecules:
+  name: "zinc-druglike"
+  source: "zinc"
+  max_molecules: null  # Screen all available
+
+hardware:
+  gpu_memory_limit: 5000  # MB - safe for GTX 1060 6GB
+  batch_size: auto
+  num_cpu_workers: 4
+  use_gpu: true
+
+docking:
+  engine: "autodock-gpu"
+  exhaustiveness: 8
+  num_poses: 9
+  energy_range: 3.0
+
+scoring:
+  # Weights for composite scoring (sum to 1.0)
+  weight_docking: 0.35
+  weight_ml_binding: 0.35
+  weight_admet: 0.20
+  weight_novelty: 0.10
+
+  # Thresholds
+  score_threshold: -7.0  # kcal/mol
+  top_candidates: 1000
+
+  # Filters
+  apply_pains_filter: true
+  apply_lipinski_filter: true
+  apply_toxicity_filter: true
+
+output:
+  formats:
+    - csv
+    - sdf
+  save_poses: true
+  save_all_scores: false
+  compress_output: false
